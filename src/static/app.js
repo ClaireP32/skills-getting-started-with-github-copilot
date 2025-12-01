@@ -4,6 +4,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
 
+  // helper to build initials from a participant string (email or "First Last")
+  function getInitials(text) {
+    if (!text) return "";
+    const beforeAt = text.split("@")[0];
+    const parts = beforeAt.split(/[.\-_ ]+/).filter(Boolean);
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+    return (parts[0][0] + (parts[1][0] || "")).toUpperCase();
+  }
+
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
@@ -20,15 +31,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
+        // build participants markup: either a scrollable list with avatars or an empty message
+        const participantsMarkup = details.participants.length
+          ? `<ul class="participants-list">
+              ${details.participants
+                .map(
+                  (participant) => `
+                <li class="participant">
+                  <span class="avatar">${getInitials(participant)}</span>
+                  <span class="name">${participant}</span>
+                </li>`
+                )
+                .join("")}
+            </ul>`
+          : `<p class="no-participants">No participants yet.</p>`;
+
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-          <p><strong>Participants:</strong></p>
-          <ul>
-            ${details.participants.map(participant => `<li>${participant}</li>`).join('')}
-          </ul>
+          <p class="activity-meta">
+            <span><strong>Schedule:</strong> ${details.schedule}</span>
+            <span class="availability">• ${spotsLeft} spots left</span>
+          </p>
+
+          <div class="participants-wrap">
+            <label>Participants</label>
+            ${participantsMarkup}
+          </div>
         `;
 
         activitiesList.appendChild(activityCard);
