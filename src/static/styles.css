@@ -107,6 +107,22 @@ main {
 }
 .participant:hover { background: #f8fafc; }
 
+/* delete/unregister button shown next to each participant */
+.participant-delete {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px;
+  border-radius: 6px;
+}
+.participant-delete:hover {
+  background: #f3f4f6;
+  color: #dc2626;
+}
+
 /* avatar circle with initials */
 .avatar {
   width: 36px;
